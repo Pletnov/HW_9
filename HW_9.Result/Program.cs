@@ -1,8 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Net;
 using MailKit;
-using MailKit.Net.Imap;
-using MimeKit;
 
 Console.WriteLine("IMAP");
 
@@ -14,7 +12,7 @@ var mailPort = 143;
 var userName = "user2@test.local";
 var password = "11111";
 
-using var client = new ImapClient();
+using var client = new MailKit.Net.Imap.ImapClient();
 using var httpClient = new HttpClient();
 
 List<string> messages = new List<string>();
@@ -66,14 +64,13 @@ while (true)
                         }
                     }
                 }
-
                 if (!url.StartsWith("http://") && !url.StartsWith("https://"))
                 {
                     continue;
                 }
                 if (downloaded.Contains(url))
                 {
-                    Console.WriteLine("Already downloaded!");
+                    Console.WriteLine("Already downloaded");
                     continue;
                 }
                 try
@@ -107,7 +104,7 @@ while (true)
                     string fullPath = Path.Combine(downloads.FullName, fileName);
                     if (File.Exists(fullPath))
                     {
-                        Console.WriteLine("File already exists!");
+                        Console.WriteLine("File already exists");
                         downloaded.Add(url);
                         continue;
                     }
@@ -121,8 +118,7 @@ while (true)
                     long downloadedBytes = 0;
                     int bytesRead;
 
-                    while ((bytesRead = await input.ReadAsync(
-                        buffer, 0, buffer.Length)) > 0)
+                    while ((bytesRead = await input.ReadAsync(buffer, 0, buffer.Length)) > 0)
                     {
                         await output.WriteAsync(buffer, 0, bytesRead);
                         downloadedBytes += bytesRead;
@@ -143,7 +139,7 @@ while (true)
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Download error: {ex.Message}");
+                    Console.WriteLine($"{ex.Message}");
                 }
             }
             Console.WriteLine();
@@ -157,11 +153,7 @@ while (true)
     catch (Exception ex)
     {
         Console.WriteLine($"IMAP error: {ex.Message}");
-        if (client.IsConnected)
-        {
-            client.Disconnect(true);
-        }
+        client.Disconnect(true);
     }
-
     await Task.Delay(30000);
 }
